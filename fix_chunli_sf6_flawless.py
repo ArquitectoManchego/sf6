@@ -320,11 +320,13 @@ min_z = min(v.co.z for m in meshes for v in m.data.vertices)
 max_z = max(v.co.z for m in meshes for v in m.data.vertices)
 print(f"\nFinal Model Verification: Min Z = {min_z:.3f}, Max Z = {max_z:.3f}, Height = {max_z - min_z:.3f}m")
 
-# Export to GLB
+# Export to GLB with JPEG image compression (ensures <100MB for Vercel deployment)
 print(f">>> EXPORTING FIXED CHUN-LI TO: {OUTPUT_GLB} <<<")
 bpy.ops.export_scene.gltf(
     filepath=OUTPUT_GLB,
     export_format='GLB',
+    export_image_format='JPEG',
+    export_image_quality=88,
     export_yup=True,
     export_animations=True,
     export_skins=True,
