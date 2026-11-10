@@ -959,7 +959,14 @@ export class CharacterController {
             child.castShadow = true;
             child.receiveShadow = true;
             if (child.material) {
-              child.material.envMapIntensity = 1.2;
+              const mats = Array.isArray(child.material) ? child.material : [child.material];
+              mats.forEach(m => {
+                m.envMapIntensity = 1.2;
+                if (m.transparent || m.opacity < 1.0) {
+                  m.alphaTest = 0.5;
+                  m.depthWrite = true;
+                }
+              });
             }
           }
         });
