@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SF6 x Fortnite Locker 3D - Creador de Personajes</title>
+  <link rel="stylesheet" href="./src/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- 3D WebGL Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- Top Header Banner (Fortnite Locker Style) -->
+  <header class="locker-header">
+    <div class="logo-area">
+      <div class="game-badge">SF6 // LOCKER</div>
+      <h1 class="main-title">SELECCIÓN DE LUCHADOR</h1>
+      <span class="subtitle">TORNAMESA 3D & EDITOR ANATÓMICO AVANZADO</span>
+    </div>
+
+    <nav class="locker-tabs">
+      <button class="tab-btn active" data-tab="chunli">
+        <span class="tab-icon">⚡</span> CHUN-LI (SF6)
+      </button>
+      <button class="tab-btn" data-tab="samus">
+        <span class="tab-icon">🚀</span> SAMUS ARAN (METROID)
+      </button>
+      <button class="tab-btn" data-tab="roster">
+        <span class="tab-icon">🥊</span> ELENCO LUCHADORAS
+      </button>
+      <button class="tab-btn" data-tab="morphs">
+        <span class="tab-icon">🧬</span> MODIFICADORES (IA)
+      </button>
+      <button class="tab-btn" data-tab="shaders">
+        <span class="tab-icon">🎨</span> SHADERS SF6
+      </button>
+      <button class="tab-btn" data-tab="import">
+        <span class="tab-icon">📂</span> MODELOS 3D
+      </button>
+    </nav>
+  </header>
+
+  <!-- Camera Presets Quick Bar (Right Top) -->
+  <aside class="cam-presets-bar">
+    <span class="bar-label">ENFOQUE:</span>
+    <button class="cam-btn active" data-view="full" title="Cuerpo Completo">👤 TODO</button>
+    <button class="cam-btn" data-view="bust" title="Busto y Pecho">👙 PECHO</button>
+    <button class="cam-btn" data-view="glutes" title="Glúteos y Cintura">🍑 GLÚTEOS</button>
+    <button class="cam-btn" data-view="legs" title="Muslos y Gemelos">🦵 PIERNAS</button>
+    <button class="cam-btn" data-view="face" title="Rostro">🎭 ROSTRO</button>
+  </aside>
+
+  <!-- Floating Customization Sidebar Panel -->
+  <main class="control-panel">
+    
+    <!-- Tab 0: Chun-Li Official Hub (Only the 3 Official Variants) -->
+    <section id="panel-chunli" class="tab-panel active">
+      <div class="panel-section-title">
+        <span>CHUN-LI (STREET FIGHTER 6)</span>
+      </div>
+      <p class="section-desc">
+        Modelos 3D de alta fidelidad, texturas PBR Capcom 4K, animaciones de combate oficiales y dinámicas de pelea en la tornamesa.
+      </p>
+
+      <div class="chunli-hub-box">
+        <div class="chunli-hub-top">
+          <div class="chunli-tag-glow">⚡ HUB EXCLUSIVO: CHUN-LI OFICIAL</div>
+          <h2 class="chunli-hub-title">VARIANTES AUTÉNTICAS DE CHUN-LI</h2>
+          <p class="chunli-hub-desc">
+            Conservando únicamente las 3 variantes oficiales requeridas en máxima calidad.
+          </p>
+        </div>
+
+        <div class="chunli-variants-grid">
+          <!-- Variante 1: Capcom SF6 Original PBR -->
+          <div class="fighter-card active chunli-card" id="btn-load-chunli-sf6">
+            <div class="fighter-badge sf6-pink">👑 CAPCOM RE-ENGINE 4K</div>
+            <div class="fighter-title">Chun-Li SF6 Oficial (Mesh Orgánico 4K)</div>
+            <div class="fighter-sub">
+              Malla oficial extraída de SF6 (19 mallas, 800 huesos), texturas 4K Capcom PBR (Albedo + Normal + Metalness) y 9 animaciones de combate.
+            </div>
+            <div class="variant-tags">
+              <span class="vtag">19 Meshes</span>
+              <span class="vtag">800 Bones</span>
+              <span class="vtag">4K PBR</span>
+              <span class="vtag highlight">9 Acciones Mocap</span>
+            </div>
+          </div>
+
+          <!-- Variante 2: Fortnite Chun-Li Clásica HD -->
+          <div class="fighter-card chunli-card" id="btn-load-chunli-fn-classic">
+            <div class="fighter-badge sf6-gold">🥋 FORTNITE CROSSOVER CLÁSICA</div>
+            <div class="fighter-title">Chun-Li Qipao Clásico (Crossover HD)</div>
+            <div class="fighter-sub">
+              Modelo crossover oficial en HD: Qipao azul real con bordados dorados, muñequeras metálicas con púas y moños con cintas de seda blanca.
+            </div>
+            <div class="variant-tags">
+              <span class="vtag">Qipao Clásico</span>
+              <span class="vtag">Muñequeras Púas</span>
+              <span class="vtag">205 Bones</span>
+              <span class="vtag highlight">Mocap Combat</span>
+            </div>
+          </div>
+
+          <!-- Variante 3: Fortnite Chun-Li Nostalgia Alpha -->
+          <div class="fighter-card chunli-card" id="btn-load-chunli-fn-nostalgia">
+            <div class="fighter-badge sf6-cyan">⚡ ALPHA NOSTALGIA ATHLETIC</div>
+            <div class="fighter-title">Chun-Li Nostalgia (Alpha Bodysuit HD)</div>
+            <div class="fighter-sub">
+              Modelo crossover oficial de entrenamiento SF Alpha: Traje atlético de lycra ceñido, zapatillas de combate azul cobalto y coleta deportiva.
+            </div>
+            <div class="variant-tags">
+              <span class="vtag">Alpha Bodysuit</span>
+              <span class="vtag">Zapatillas Botín</span>
+              <span class="vtag">185 Bones</span>
+              <span class="vtag highlight">Mocap Combat</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-header" style="margin-top: 18px;">
+        <span>🎮 ACCIONES DE COMBATE DE CHUN-LI EN LA TORNAMESA</span>
+      </div>
+      <div class="combat-actions-bar">
+        <button class="combat-btn highlight-kick" id="btn-combat-kick">
+          <span class="cbtn-icon">🥋</span>
+          <span class="cbtn-text">
+            <strong>Patada Relámpago</strong>
+            <small>Hyakuretsukyaku (8 Patadas)</small>
+          </span>
+        </button>
+
+        <button class="combat-btn highlight-sbk" id="btn-combat-sbk">
+          <span class="cbtn-icon">🌀</span>
+          <span class="cbtn-text">
+            <strong>Spinning Bird Kick</strong>
+            <small>Helicóptero 360° en el Eje</small>
+          </span>
+        </button>
+
+        <button class="combat-btn highlight-drive" id="btn-combat-drive">
+          <span class="cbtn-icon">💥</span>
+          <span class="cbtn-text">
+            <strong>SF6 Drive Impact</strong>
+            <small>Heavy Strike + Hitstop</small>
+          </span>
+        </button>
+
+        <button class="combat-btn highlight-tensho" id="btn-combat-tensho">
+          <span class="cbtn-icon">⚡</span>
+          <span class="cbtn-text">
+            <strong>Tenshokyaku</strong>
+            <small>Patada Aérea Ascendente</small>
+          </span>
+        </button>
+
+        <button class="combat-btn highlight-kiko" id="btn-combat-kiko">
+          <span class="cbtn-icon">🔮</span>
+          <span class="cbtn-text">
+            <strong>Kikosho (Super Art)</strong>
+            <small>Chi Blast Doble Palma</small>
+          </span>
+        </button>
+
+        <button class="combat-btn highlight-guard" id="btn-combat-guard">
+          <span class="cbtn-icon">🛡️</span>
+          <span class="cbtn-text">
+            <strong>Guardia Kung Fu</strong>
+            <small>Idle Stance & Respiración</small>
+          </span>
+        </button>
+
+        <button class="combat-btn highlight-victory" id="btn-combat-victory">
+          <span class="cbtn-icon">🏆</span>
+          <span class="cbtn-text">
+            <strong>Pose de Victoria</strong>
+            <small>Doble "V" + Jingle Yatta!</small>
+          </span>
+        </button>
+
+        <button class="combat-btn highlight-taunt" id="btn-combat-taunt">
+          <span class="cbtn-icon">😏</span>
+          <span class="cbtn-text">
+            <strong>Provocación SF6</strong>
+            <small>Gomen ne! + Gesto Marcial</small>
+          </span>
+        </button>
+
+        <button class="combat-btn highlight-framedata" id="btn-open-framedata" style="grid-column: span 2;">
+          <span class="cbtn-icon">📊</span>
+          <span class="cbtn-text">
+            <strong>Move List & Frame Data Oficial (SuperCombo Wiki)</strong>
+            <small>69 Movimientos • Startup / Hit / On-Block / Hitbox 3D</small>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Tab 1: Samus Aran Locker Hub (Metroid Prime -> Metroid Dread) -->
+    <section id="panel-samus" class="tab-panel">
+      <div class="panel-section-title">
+        <span>SAMUS ARAN (METROID PRIME -> DREAD)</span>
+      </div>
+      <p class="section-desc">
+        La legendaria cazarrecompensas con todos sus trajes en 3D, cañón Arm Cannon, shaders metálicos Chozo, animaciones y controles de combate en la tornamesa.
+      </p>
+
+      <div class="samus-hub-box">
+        <div class="samus-tag-glow">🚀 NINTENDO METROID // TECNOLOGÍA CHOZO</div>
+        <h2 class="samus-hub-title">LOCKER DE TRAJES DE SAMUS ARAN</h2>
+        <p class="samus-hub-desc">
+          Selecciona cualquiera de las 5 variantes de trajes oficiales. Cada traje cuenta con malla 3D PBR, visor con brillo emissive y Arm Cannon equipado.
+        </p>
+
+        <!-- Selector de Trajes de Samus -->
+        <div class="suit-switcher-wrap">
+          <div class="suit-switcher-title">Seleccionar Traje Activo:</div>
+          <div class="suit-chips-grid">
+            <button class="suit-chip-btn active" data-suit="varia" id="btn-samus-varia">
+              <span class="suit-chip-name">⚡ Varia Suit</span>
+              <span class="suit-chip-sub">Metroid Prime (Clásico)</span>
+            </button>
+            <button class="suit-chip-btn" data-suit="zero" id="btn-samus-zero">
+              <span class="suit-chip-name">🧬 Zero Suit</span>
+              <span class="suit-chip-sub">Bodysuit Atlético & Paralyzer</span>
+            </button>
+            <button class="suit-chip-btn" data-suit="dread" id="btn-samus-dread">
+              <span class="suit-chip-name">🛡️ Dread Suit</span>
+              <span class="suit-chip-sub">Metroid Dread (Quitina & Cian)</span>
+            </button>
+            <button class="suit-chip-btn" data-suit="gravity" id="btn-samus-gravity">
+              <span class="suit-chip-name">🔮 Gravity Suit</span>
+              <span class="suit-chip-sub">Aleación Púrpura Magma</span>
+            </button>
+            <button class="suit-chip-btn" data-suit="phazon" id="btn-samus-phazon">
+              <span class="suit-chip-name">☣️ Phazon Suit</span>
+              <span class="suit-chip-sub">Obsidiana & Visor Carmesí</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-header">
+        <span>🎮 ACCIONES DE COMBATE CHOZO EN LA TORNAMESA</span>
+      </div>
+      <div class="combat-actions-bar">
+        <!-- 1. Charge Shot -->
+        <button class="combat-btn highlight-drive" id="btn-samus-charge">
+          <span class="cbtn-icon">💥</span>
+          <span class="cbtn-text">
+            <strong>Charge Shot</strong>
+            <small>Haz de Plasma Arm Cannon</small>
+          </span>
+        </button>
+
+        <!-- 2. Screw Attack -->
+        <button class="combat-btn highlight-sbk" id="btn-samus-screw">
+          <span class="cbtn-icon">🌀</span>
+          <span class="cbtn-text">
+            <strong>Screw Attack</strong>
+            <small>Salto Mortal Giratorio 360°</small>
+          </span>
+        </button>
+
+        <!-- 3. Super Missile -->
+        <button class="combat-btn highlight-tensho" id="btn-samus-missile">
+          <span class="cbtn-icon">🚀</span>
+          <span class="cbtn-text">
+            <strong>Super Misil</strong>
+            <small>Disparo Pesado con Retroceso</small>
+          </span>
+        </button>
+
+        <!-- 4. Guardia Chozo -->
+        <button class="combat-btn highlight-guard" id="btn-samus-guard">
+          <span class="cbtn-icon">🛡️</span>
+          <span class="cbtn-text">
+            <strong>Guardia de Escáner</strong>
+            <small>Apuntado con Arm Cannon</small>
+          </span>
+        </button>
+
+        <!-- 5. Victoria Chozo -->
+        <button class="combat-btn highlight-victory" id="btn-samus-victory">
+          <span class="cbtn-icon">🏆</span>
+          <span class="cbtn-text">
+            <strong>Victoria de Misión</strong>
+            <small>Saludo Triunfal Arm Cannon</small>
+          </span>
+        </button>
+
+        <!-- 6. Diagnóstico de Traje -->
+        <button class="combat-btn highlight-taunt" id="btn-samus-taunt">
+          <span class="cbtn-icon">⚡</span>
+          <span class="cbtn-text">
+            <strong>Diagnóstico de Visor</strong>
+            <small>Revisión de Blindaje y Potencia</small>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Tab 2: Female Fighters Roster & Async Queue Manager -->
+    <section id="panel-roster" class="tab-panel">
+      <div class="panel-section-title">
+        <span>ROSTER DE LUCHADORAS & COLA DE PROCESAMIENTO</span>
+      </div>
+      <p class="section-desc">
+        Catálogo de personajes femeninas de Street Fighter 6, Darkstalkers, King of Fighters, Tekken, Dead or Alive y Fortnite con gestor de cola de procesamiento.
+      </p>
+
+      <!-- Barra de Filtros de Franquicia -->
+      <div class="universe-filter-bar">
+        <button class="universe-filter-btn active" data-filter="all">Todas (24)</button>
+        <button class="universe-filter-btn" data-filter="metroid">Metroid</button>
+        <button class="universe-filter-btn" data-filter="sf6">Street Fighter 6</button>
+        <button class="universe-filter-btn" data-filter="darkstalkers">Darkstalkers</button>
+        <button class="universe-filter-btn" data-filter="kof">KOF</button>
+        <button class="universe-filter-btn" data-filter="tekken">Tekken</button>
+        <button class="universe-filter-btn" data-filter="doa">Dead or Alive</button>
+      </div>
+
+      <!-- Cuadrícula Dinámica de Luchadoras -->
+      <div class="fighters-grid" id="roster-fighters-grid">
+        <!-- Renderizado dinámicamente desde femaleRoster.js -->
+      </div>
+    </section>
+
+    <!-- Tab 3: Editor Anatómico de Modificadores Corporales con IA -->
+    <section id="panel-morphs" class="tab-panel">
+      <div class="panel-section-title">
+        <span>🧬 EDITOR ANATÓMICO & MORPHS (IA)</span>
+      </div>
+      <p class="section-desc">
+        Modificadores corporales adaptativos en tiempo real con escaneo de esqueletos por IA (Capcom RE-Engine, Unreal Fortnite, Mixamo y VRM).
+      </p>
+
+      <!-- Tarjeta de Diagnóstico y Calibración IA -->
+      <div class="ai-inspector-card">
+        <div class="ai-card-header">
+          <div class="ai-status-pulse"></div>
+          <span class="ai-badge-title">IA ANATOMICAL SCANNER v2.0</span>
+          <span class="ai-confidence" id="ai-telemetry-confidence">99.8% EXACTITUD</span>
+        </div>
+        <div class="ai-model-details">
+          <div class="ai-detail-row">
+            <span class="ai-lbl">MODELO ACTUAL:</span>
+            <span class="ai-val" id="ai-telemetry-model">Chun-Li SF6 Oficial</span>
+          </div>
+          <div class="ai-detail-row">
+            <span class="ai-lbl">ARQUITECTURA DE RIG:</span>
+            <span class="ai-val highlight-rig" id="ai-telemetry-rig">Capcom RE-Engine (SF6)</span>
+          </div>
+          <div class="ai-detail-row">
+            <span class="ai-lbl">HUESOS ESCANEADOS:</span>
+            <span class="ai-val" id="ai-telemetry-bones">498 huesos / 19 mallas</span>
+          </div>
+        </div>
+        <div class="ai-channels-pill-grid" id="ai-telemetry-channels">
+          <span class="ai-pill">👙 Busto: 4</span>
+          <span class="ai-pill">⏳ Cintura: 2</span>
+          <span class="ai-pill">📐 Cadera: 1</span>
+          <span class="ai-pill">🍑 Glúteos: 6</span>
+          <span class="ai-pill">🦵 Muslos: 6</span>
+          <span class="ai-pill">🦶 Gemelos: 6</span>
+        </div>
+        <div class="ai-action-btns">
+          <button class="ai-btn-calibrate" id="btn-recalibrate-ai">⚡ RECALIBRAR IA</button>
+          <button class="ai-btn-reset" id="btn-reset-morphs">🔄 RESET ORIGINAL</button>
+        </div>
+      </div>
+
+      <!-- Presets Anatómicos Inteligentes -->
+      <div class="sub-header">
+        <span>⚡ PRESETS ANATÓMICOS INTELIGENTES</span>
+      </div>
+      <div class="preset-chips-grid">
+        <button class="preset-chip active" data-preset="chunli">👑 Chun-Li SF6 Oficial</button>
+        <button class="preset-chip" data-preset="samus">🚀 Samus Atlética Chozo</button>
+        <button class="preset-chip" data-preset="hourglass">⏳ Reloj de Arena Pro</button>
+        <button class="preset-chip" data-preset="muscular">💪 Fitness Muscular</button>
+        <button class="preset-chip" data-preset="neutral">⚖️ Neutral (1.0)</button>
+      </div>
+
+      <!-- 1. BUSTO & COPA -->
+      <div class="sub-header">
+        <span>👙 BUSTO / PECHO</span>
+      </div>
+      <div class="slider-group highlight">
+        <div class="slider-header">
+          <span>Volumen del Busto:</span>
+          <span class="val-badge" id="val-bust-size">1.00</span>
+        </div>
+        <input type="range" id="slider-bust-size" min="0.5" max="2.2" step="0.02" value="1.0">
+      </div>
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>Proyección de Copa:</span>
+          <span class="val-badge" id="val-bust-cup">1.00</span>
+        </div>
+        <input type="range" id="slider-bust-cup" min="0.5" max="2.0" step="0.02" value="1.0">
+      </div>
+
+      <!-- 2. CINTURA -->
+      <div class="sub-header">
+        <span>⏳ CINTURA & ABDOMEN</span>
+      </div>
+      <div class="slider-group highlight">
+        <div class="slider-header">
+          <span>Anchura de Cintura (Avispa):</span>
+          <span class="val-badge" id="val-waist">1.00</span>
+        </div>
+        <input type="range" id="slider-waist" min="0.6" max="1.5" step="0.02" value="1.0">
+      </div>
+
+      <!-- 3. CADERA -->
+      <div class="sub-header">
+        <span>📐 CADERA & PELVIS</span>
+      </div>
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>Anchura de Cadera:</span>
+          <span class="val-badge" id="val-hip">1.00</span>
+        </div>
+        <input type="range" id="slider-hip" min="0.7" max="1.7" step="0.02" value="1.0">
+      </div>
+
+      <!-- 4. GLÚTEOS -->
+      <div class="sub-header">
+        <span>🍑 GLÚTEOS & FORMA</span>
+      </div>
+      <div class="slider-group highlight">
+        <div class="slider-header">
+          <span>Volumen de Glúteos:</span>
+          <span class="val-badge" id="val-glute-size">1.10</span>
+        </div>
+        <input type="range" id="slider-glute-size" min="0.6" max="2.2" step="0.02" value="1.1">
+      </div>
+
+      <div class="shape-selector">
+        <span class="section-micro-label">FORMA ANATÓMICA DE GLÚTEOS:</span>
+        <div class="shape-btn-grid">
+          <button class="shape-btn active" data-shape="heart">❤️ Corazón (SF6)</button>
+          <button class="shape-btn" data-shape="teardrop">💧 Gota Atlética</button>
+          <button class="shape-btn" data-shape="oval">🥚 Ovalada Alta</button>
+          <button class="shape-btn" data-shape="round">⚪ Redonda</button>
+        </div>
+      </div>
+
+      <!-- 5. PIERNAS: MUSLOS Y GEMELOS -->
+      <div class="sub-header">
+        <span>🦵 PIERNAS (THUNDER THIGHS)</span>
+      </div>
+      <div class="slider-group highlight">
+        <div class="slider-header">
+          <span>Grosor de Muslos:</span>
+          <span class="val-badge" id="val-thigh">1.15</span>
+        </div>
+        <input type="range" id="slider-thigh" min="0.7" max="2.3" step="0.02" value="1.15">
+      </div>
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>Grosor de Gemelos / Pantorrillas:</span>
+          <span class="val-badge" id="val-calf">1.05</span>
+        </div>
+        <input type="range" id="slider-calf" min="0.7" max="1.8" step="0.02" value="1.05">
+      </div>
+
+      <!-- 6. ESTATURA -->
+      <div class="sub-header">
+        <span>📏 ESTATURA & ALTURA</span>
+      </div>
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>Altura del Personaje:</span>
+          <span class="val-badge" id="val-height">1.00</span>
+        </div>
+        <input type="range" id="slider-height" min="0.80" max="1.25" step="0.01" value="1.0">
+      </div>
+
+      <!-- 7. MÚSCULO & GRASA CORPORAL -->
+      <div class="sub-header">
+        <span>💪 DEFINICIÓN MUSCULAR & COMPOSICIÓN</span>
+      </div>
+      <div class="slider-group highlight">
+        <div class="slider-header">
+          <span>Definición Muscular (Normal Map PBR):</span>
+          <span class="val-badge" id="val-muscle">70%</span>
+        </div>
+        <input type="range" id="slider-muscle" min="0" max="1.0" step="0.02" value="0.7">
+      </div>
+      <div class="slider-group">
+        <div class="slider-header">
+          <span>Grasa Corporal (Softness & Spread):</span>
+          <span class="val-badge" id="val-fat">15%</span>
+        </div>
+        <input type="range" id="slider-fat" min="0" max="0.5" step="0.01" value="0.15">
+      </div>
+
+      <!-- MODO EDITOR AVANZADO: AJUSTE FINO DE SENSIBILIDAD -->
+      <div class="sub-header" style="margin-top: 18px;">
+        <span>🔧 MODO EDITOR: CALIBRACIÓN FINA DE CANALES IA</span>
+      </div>
+      <div class="editor-fine-tuning-card">
+        <p class="fine-tuning-desc">
+          Ajusta la sensibilidad de respuesta de cada canal anatómico para calibrar modelos personalizados con topologías complejas.
+        </p>
+        <div class="fine-tuning-row">
+          <span>Sensibilidad Busto:</span>
+          <input type="range" class="sens-slider" data-channel="bust" min="0.2" max="2.0" step="0.05" value="1.0">
+        </div>
+        <div class="fine-tuning-row">
+          <span>Sensibilidad Cintura:</span>
+          <input type="range" class="sens-slider" data-channel="waist" min="0.2" max="2.0" step="0.05" value="1.0">
+        </div>
+        <div class="fine-tuning-row">
+          <span>Sensibilidad Glúteos:</span>
+          <input type="range" class="sens-slider" data-channel="glutes" min="0.2" max="2.0" step="0.05" value="1.0">
+        </div>
+        <div class="fine-tuning-row">
+          <span>Sensibilidad Muslos:</span>
+          <input type="range" class="sens-slider" data-channel="thighs" min="0.2" max="2.0" step="0.05" value="1.0">
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 4: SF6 Shaders -->
+    <section id="panel-shaders" class="tab-panel">
+      <div class="panel-section-title">
+        <span>RENDERIZADO & SHADERS SF6</span>
+      </div>
+
+      <div class="shader-cards-grid">
+        <button class="shader-btn active" data-shader="pbr">
+          <div class="shader-title">RE Engine Stylized PBR</div>
+          <div class="shader-desc">Iluminación de estudio de 3 puntos, Rim Light de neón (Cian y Magenta) y mapas de rugosidad física.</div>
+        </button>
+
+        <button class="shader-btn" data-shader="toon">
+          <div class="shader-title">Street Fighter Cel-Shading</div>
+          <div class="shader-desc">Sombreado Toon cuantizado en 4 bandas tonales con estilo anime de juego de lucha.</div>
+        </button>
+      </div>
+
+      <div class="sub-header">
+        <span>EFECTO VISUAL DRIVE IMPACT</span>
+      </div>
+      <p class="section-desc">
+        Detona la explosión de pintura de combate con salpicaduras de tinta de colores característicos de Street Fighter 6.
+      </p>
+      <button class="action-btn-impact" id="btn-drive-impact">
+        💥 ACTIVAR SF6 DRIVE IMPACT (FX + SFX)
+      </button>
+    </section>
+
+    <!-- Tab 5: Import 3D Models -->
+    <section id="panel-import" class="tab-panel">
+      <div class="panel-section-title">
+        <span>IMPORTADOR DE MODELOS EXTERNOS</span>
+      </div>
+      <p class="section-desc">
+        Arrastra cualquier archivo <strong>.GLB</strong>, <strong>.GLTF</strong> o <strong>.VRM</strong> extraído de Street Fighter 6, Blender o Mixamo directamente sobre la tornamesa 3D.
+      </p>
+
+      <div class="drop-zone-box" id="drop-zone">
+        <div class="drop-icon">📥</div>
+        <h3>Arrastra tu archivo .GLB / .VRM aquí</h3>
+        <p>Se adaptará automáticamente a la tornamesa con iluminación y sombras en tiempo real.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Turntable Controls Bar & Fighting Dock -->
+  <footer class="turntable-hud">
+    <div class="combat-floating-dock">
+      <button id="btn-hud-kick" class="dock-move-btn kick-color" title="Patada Relámpago (Hyakuretsukyaku)">
+        <span class="dock-icon">🥋</span>
+        <span>PATADA RELÁMPAGO</span>
+      </button>
+      <button id="btn-hud-sbk" class="dock-move-btn sbk-color" title="Spinning Bird Kick (Helicóptero 360°)">
+        <span class="dock-icon">🌀</span>
+        <span>SPINNING BIRD KICK</span>
+      </button>
+      <button id="btn-hud-drive" class="dock-move-btn drive-color" title="SF6 Drive Impact">
+        <span class="dock-icon">💥</span>
+        <span>DRIVE IMPACT</span>
+      </button>
+      <button id="btn-hud-tensho" class="dock-move-btn tensho-color" title="Tenshokyaku (Patada Aérea Ascendente)">
+        <span class="dock-icon">⚡</span>
+        <span>TENSHOKYAKU</span>
+      </button>
+      <button id="btn-hud-kiko" class="dock-move-btn kiko-color" title="Kikosho (Super Art Chi Blast)">
+        <span class="dock-icon">🔮</span>
+        <span>KIKOSHO</span>
+      </button>
+      <button id="btn-hud-guard" class="dock-move-btn guard-color" title="Guardia Kung Fu (Idle Stance)">
+        <span class="dock-icon">🛡️</span>
+        <span>GUARDIA</span>
+      </button>
+      <button id="btn-hud-victory" class="dock-move-btn victory-color" title="Pose de Victoria (Yatta!)">
+        <span class="dock-icon">🏆</span>
+        <span>VICTORIA</span>
+      </button>
+      <button id="btn-hud-taunt" class="dock-move-btn taunt-color" title="Provocación (Gomen ne!)">
+        <span class="dock-icon">😏</span>
+        <span>PROVOCAR</span>
+      </button>
+    </div>
+
+    <div class="turntable-pill">
+      <button id="btn-turntable-toggle" class="hud-btn active">⏸ Pausar Giro</button>
+      <div class="speed-slider-wrap">
+        <span class="speed-label">Giro:</span>
+        <input type="range" id="slider-turntable-speed" min="0" max="2.0" step="0.1" value="0.5">
+      </div>
+    </div>
+  </footer>
+
+  <!-- Fullscreen Drop Overlay -->
+  <div id="drop-overlay" class="drop-overlay">
+    <div class="drop-msg">
+      <span>📥</span>
+      <h2>Suelta tu archivo .GLB / .VRM para cargarlo en la tornamesa</h2>
+    </div>
+  </div>
+
+  <!-- Real-Time Combat Telemetry HUD -->
+  <div id="combat-telemetry-hud" class="combat-telemetry-hud hidden">
+    <div class="telemetry-inner">
+      <div class="telemetry-badge-header">
+        <span class="telemetry-fighter" id="telemetry-fighter">CHUN-LI</span>
+        <span class="telemetry-tag">SF6 OFFICIAL FRAME DATA</span>
+      </div>
+      <div class="telemetry-move-row">
+        <div class="telemetry-move-name" id="telemetry-move-name">HYAKURETSUKYAKU</div>
+        <div class="telemetry-move-ja" id="telemetry-move-ja">百裂脚</div>
+        <div class="telemetry-move-input" id="telemetry-move-input">236 + K</div>
+      </div>
+      <div class="telemetry-metrics-grid">
+        <div class="telemetry-metric-box">
+          <span class="t-label">STARTUP</span>
+          <span class="t-value t-green" id="telemetry-startup">12f</span>
+        </div>
+        <div class="telemetry-metric-box">
+          <span class="t-label">ACTIVE</span>
+          <span class="t-value t-yellow" id="telemetry-active">18f</span>
+        </div>
+        <div class="telemetry-metric-box">
+          <span class="t-label">RECOVERY</span>
+          <span class="t-value t-blue" id="telemetry-recovery">22f</span>
+        </div>
+        <div class="telemetry-metric-box">
+          <span class="t-label">ON HIT</span>
+          <span class="t-value t-cyan" id="telemetry-onhit">+4</span>
+        </div>
+        <div class="telemetry-metric-box">
+          <span class="t-label">ON BLOCK</span>
+          <span class="t-value t-pink" id="telemetry-onblock">-8</span>
+        </div>
+        <div class="telemetry-metric-box">
+          <span class="t-label">DAMAGE</span>
+          <span class="t-value" id="telemetry-damage">1200</span>
+        </div>
+        <div class="telemetry-metric-box">
+          <span class="t-label">CANCEL</span>
+          <span class="t-value t-purple" id="telemetry-cancel">SA3</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Move List & Frame Data Modal -->
+  <div id="framedata-modal" class="framedata-modal hidden">
+    <div class="framedata-modal-backdrop" id="fd-modal-backdrop"></div>
+    <div class="framedata-modal-dialog">
+      <div class="framedata-header">
+        <div class="fd-title-wrap">
+          <span class="fd-ico">🥋</span>
+          <div>
+            <h2>GUÍA OFICIAL DE MOVIMIENTOS & FRAME DATA SF6</h2>
+            <p>Base de datos oficial de Street Fighter 6 (4rays/sf6-move-data) adaptada al motor 3D</p>
+          </div>
+        </div>
+        <button id="btn-close-framedata" class="fd-close-btn">&times;</button>
+      </div>
+      
+      <!-- Fighter Selection Tabs -->
+      <div class="fd-fighter-tabs">
+        <button class="fd-fighter-tab active" data-fighter="chunli">
+          <span>CHUN-LI</span> <small>(69 Movimientos SF6)</small>
+        </button>
+        <button class="fd-fighter-tab" data-fighter="samus">
+          <span>SAMUS ARAN</span> <small>(Tecnología Chozo & Arm Cannon)</small>
+        </button>
+      </div>
+
+      <!-- Search and Category Filters -->
+      <div class="fd-toolbar">
+        <div class="fd-search-box">
+          <span>🔍</span>
+          <input type="text" id="fd-search-input" placeholder="Buscar por nombre, comando o abreviación (ej. Tensho, 236K, Kikoken)...">
+        </div>
+        <div class="fd-category-filters">
+          <button class="fd-cat-btn active" data-cat="all">Todos</button>
+          <button class="fd-cat-btn" data-cat="normal">Normales</button>
+          <button class="fd-cat-btn" data-cat="commandNormal">Command</button>
+          <button class="fd-cat-btn" data-cat="special">Especiales</button>
+          <button class="fd-cat-btn" data-cat="super">Super Arts</button>
+          <button class="fd-cat-btn" data-cat="throw">Agarres</button>
+        </div>
+      </div>
+
+      <!-- Moves List Container -->
+      <div class="fd-moves-grid" id="fd-moves-list">
+        <!-- Populated dynamically from SF6_MOVE_DATA -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+node_modules
+dist
+.vercel
+blender/
+blender_addons/
+raw_assets/
+*.zip
+*.rar
+*.exe
+*.fbx

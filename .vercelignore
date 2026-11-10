@@ -1,0 +1,8 @@
+blender/
+blender_addons/
+raw_assets/
+*.zip
+*.rar
+*.exe
+node_modules/
+.git/
