@@ -8,3 +8,6 @@ raw_assets/
 *.rar
 *.exe
 *.fbx
+*.list
+tools/
+
