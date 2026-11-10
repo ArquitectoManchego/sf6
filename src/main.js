@@ -535,6 +535,39 @@ class App {
       });
     }
 
+    // Toggle 3D Visual Editor Mode
+    const btnToggleEditor = document.getElementById('btn-toggle-editor-mode');
+    if (btnToggleEditor) {
+      btnToggleEditor.addEventListener('click', () => {
+        sfx.playClick();
+        const deformer = this.character.deformer;
+        if (!deformer) return;
+        const nextState = !deformer.isEditorModeActive;
+        deformer.setEditorMode(nextState);
+        btnToggleEditor.textContent = nextState ? '🔧 MODO EDITOR 3D (GIZMOS IA): ACTIVO' : '🔧 MODO EDITOR 3D (GIZMOS IA): OFF';
+        btnToggleEditor.style.borderColor = nextState ? 'var(--neon-pink)' : 'var(--neon-cyan)';
+        btnToggleEditor.style.boxShadow = nextState ? '0 0 16px rgba(255, 0, 127, 0.6)' : 'none';
+        this.updateAITelemetryUI();
+      });
+    }
+
+    // Auto-Generate AI Modifiers for Active Mesh
+    const btnGenerateAI = document.getElementById('btn-generate-ai-modifiers');
+    if (btnGenerateAI) {
+      btnGenerateAI.addEventListener('click', () => {
+        sfx.playWhoosh();
+        const deformer = this.character.deformer;
+        if (!deformer) return;
+        deformer.autoGenerateAIModifiers();
+        deformer.apply();
+        this.updateAITelemetryUI();
+        btnGenerateAI.textContent = '✨ MODIFICADORES ADAPTADOS CON IA';
+        setTimeout(() => {
+          btnGenerateAI.textContent = '🤖 GENERAR MODIFICADORES CON IA';
+        }, 2000);
+      });
+    }
+
     // Recalibrate AI Button
     const btnRecalibrateAI = document.getElementById('btn-recalibrate-ai');
     if (btnRecalibrateAI) {

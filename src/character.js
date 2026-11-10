@@ -881,6 +881,9 @@ export class CharacterController {
 
   setParam(key, value) {
     this.params[key] = value;
+    if (this.deformer) {
+      this.deformer.needsVertexUpdate = true;
+    }
     if (key === 'outfitType') {
       this.buildOutfits();
     } else if (key === 'hairStyle') {

@@ -59,8 +59,10 @@ def assign_pbr_textures(mat_name, albd_filename, nrrc_filename=None, is_alpha_bl
             links.new(tex_node.outputs['Color'], bsdf.inputs['Base Color'])
             if is_alpha_blend:
                 links.new(tex_node.outputs['Alpha'], bsdf.inputs['Alpha'])
-                mat.blend_method = 'HASHED'
-                mat.shadow_method = 'HASHED'
+                if hasattr(mat, 'blend_method'):
+                    mat.blend_method = 'HASHED'
+                if hasattr(mat, 'shadow_method'):
+                    mat.shadow_method = 'HASHED'
                 
     # Normal Map Texture
     if nrrc_filename:
@@ -156,6 +158,20 @@ finger_pairs = [
     ('mixamorig:RightHandPinky3', 'R_Pinky3'),
 ]
 
+def get_action_fcurves(act):
+    if not act:
+        return []
+    if hasattr(act, 'fcurves') and act.fcurves:
+        return list(act.fcurves)
+    curves = []
+    if hasattr(act, 'layers'):
+        for l in act.layers:
+            for s in getattr(l, 'strips', []):
+                for bag in getattr(s, 'channelbags', []):
+                    for fc in getattr(bag, 'fcurves', []):
+                        curves.append(fc)
+    return curves
+
 for fbx_file, action_name, start_f, end_f, lock_center in mocap_actions:
     fbx_path = os.path.join(MOCAP_DIR, fbx_file)
     print(f"\n--- Retargeting '{action_name}' from {fbx_file} (frames {start_f}..{end_f}) ---")
@@ -217,22 +233,18 @@ for fbx_file, action_name, start_f, end_f, lock_center in mocap_actions:
             c_rot_toe.target = src_arm
             c_rot_toe.subtarget = f'mixamorig:{s_side}ToeBase'
             
-    # 4. Arms via Anatomical IK (Chain 2: UpperArm + ForeArm to Hand)
-    # Guaranteed to NEVER cross sides: Left stays strictly at +X, Right stays strictly at -X!
-    for s_side, t_side in [('Left', 'L'), ('Right', 'R')]:
-        # Clavicle / Shoulder copy rotation
-        pb_sh = tgt_arm.pose.bones.get(f'{t_side}_Shoulder')
-        if pb_sh:
-            c_sh = pb_sh.constraints.new('COPY_ROTATION')
-            c_sh.target = src_arm
-            c_sh.subtarget = f'mixamorig:{s_side}Shoulder'
-            
+    # 4. Arms via Anatomical IK (Chain 2: UpperArm + ForeArm to Hand with Anatomical Pole Targets)
+    # Natural clavicles (no rest-pose twist): Left arm strictly +X, Right arm strictly -X!
+    for s_side, t_side, pole_deg in [('Left', 'L', 0), ('Right', 'R', 90)]:
         pb_forearm = tgt_arm.pose.bones.get(f'{t_side}_ForeArm')
         if pb_forearm:
             c_ik_arm = pb_forearm.constraints.new('IK')
             c_ik_arm.target = src_arm
             c_ik_arm.subtarget = f'mixamorig:{s_side}Hand'
             c_ik_arm.chain_count = 2
+            c_ik_arm.pole_target = src_arm
+            c_ik_arm.pole_subtarget = f'mixamorig:{s_side}ForeArm'
+            c_ik_arm.pole_angle = math.radians(pole_deg)
             
         pb_hand = tgt_arm.pose.bones.get(f'{t_side}_Hand')
         if pb_hand:
@@ -251,8 +263,7 @@ for fbx_file, action_name, start_f, end_f, lock_center in mocap_actions:
     # Ensure target armature is active in Pose Mode
     bpy.context.view_layer.objects.active = tgt_arm
     bpy.ops.object.mode_set(mode='POSE')
-    for pb in tgt_arm.pose.bones:
-        pb.bone.select = True
+    bpy.ops.pose.select_all(action='SELECT')
 
     # Bake with visual keying and automatic constraint clearing
     bpy.ops.nla.bake(
@@ -267,10 +278,9 @@ for fbx_file, action_name, start_f, end_f, lock_center in mocap_actions:
     # Name the baked action
     if tgt_arm.animation_data and tgt_arm.animation_data.action:
         tgt_arm.animation_data.action.name = action_name
-        
         # Center lock for turntable actions
         if lock_center:
-            fcurves = tgt_arm.animation_data.action.fcurves
+            fcurves = get_action_fcurves(tgt_arm.animation_data.action)
             for fc in fcurves:
                 if fc.data_path.endswith("location") and "C_Hip" in fc.data_path:
                     if fc.array_index in (0, 1):  # X, Y horizontal sway
