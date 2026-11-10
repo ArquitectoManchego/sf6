@@ -901,8 +901,11 @@ export class CharacterController {
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
 
+    // Cache-buster to bypass any browser HTTP cache and immediately load the fresh 3D mesh
+    const finalUrl = (fileUrl.startsWith('blob:') || fileUrl.includes('?')) ? fileUrl : `${fileUrl}?v=sf6_mesh_v2`;
+
     loader.load(
-      fileUrl,
+      finalUrl,
       (gltf) => {
         // Clear procedural character & previous models
         while (this.characterGroup.children.length > 0) {
