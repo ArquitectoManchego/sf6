@@ -364,6 +364,42 @@ export const FEMALE_ROSTER = [
     modelUrl: '/models/kasumi_doa.glb',
     neonColor: '#5a189a',
     moves: []
+  },
+
+  // ==========================================
+  // FORTNITE CROSSOVER (FEMALE FIGHTERS)
+  // ==========================================
+  {
+    id: 'chunli_fn_classic',
+    name: 'Chun-Li Qipao Clásico',
+    title: 'Crossover HD Fortnite x Street Fighter',
+    universe: 'fortnite',
+    universeName: 'Fortnite',
+    badge: '🥋 QIPAO CLÁSICO HD',
+    badgeColor: 'sf6-gold',
+    combatArchetype: 'Kung Fu Tradicional & Muñequeras de Púas',
+    desc: 'Modelo Fortnite HD con Qipao de seda azul real, bordados de dragón dorados, muñequeras con pinchos y moños de seda.',
+    modelUrl: '/models/chunli_fortnite_classic.glb',
+    neonColor: '#ffb703',
+    moves: [
+      { id: 'fn_kick', name: 'Patada Relámpago HD', input: '236K', startup: '12f', active: '18f', recovery: '22f', hit: '+4', block: '-8', damage: 1200, anim: 'Lightning_Kick' }
+    ]
+  },
+  {
+    id: 'chunli_fn_nostalgia',
+    name: 'Chun-Li Alpha Nostalgia',
+    title: 'Crossover HD Bodysuit Atlético',
+    universe: 'fortnite',
+    universeName: 'Fortnite',
+    badge: '⚡ ALPHA BODYSUIT HD',
+    badgeColor: 'sf6-cyan',
+    combatArchetype: 'Artes Marciales Atléticas & Zapatillas de Combate',
+    desc: 'Modelo Fortnite HD con traje atlético de entrenamiento SF Alpha, zapatillas deportivas de combate y coleta alta.',
+    modelUrl: '/models/chunli_fortnite_nostalgia.glb',
+    neonColor: '#00b4d8',
+    moves: [
+      { id: 'fn_nostalgia_kick', name: 'Patada Relámpago Alpha', input: '236K', startup: '12f', active: '18f', recovery: '22f', hit: '+4', block: '-8', damage: 1200, anim: 'Lightning_Kick' }
+    ]
   }
 ];
 

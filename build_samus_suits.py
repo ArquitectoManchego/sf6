@@ -51,6 +51,7 @@ def load_base_rig():
 # Helper: Assign all vertices of an object to a bone with weight 1.0
 def bind_mesh_to_bone(obj, arm, bone_name):
     obj.parent = arm
+    obj.matrix_parent_inverse = arm.matrix_world.inverted()
     mod = obj.modifiers.new(name="Armature", type='ARMATURE')
     mod.object = arm
     vg = obj.vertex_groups.new(name=bone_name)
@@ -290,6 +291,10 @@ def attach_combat_actions(arm):
             track.strips.new(action_name, start_frame, new_action)
             
         bpy.data.objects.remove(mocap_arm, do_unlink=True)
+        # Clean up any stray meshes from FBX import
+        for obj in list(bpy.data.objects):
+            if obj != arm and obj.parent != arm:
+                bpy.data.objects.remove(obj, do_unlink=True)
         
     # Set default action to Idle_Combat
     idle_act = bpy.data.actions.get("Idle_Combat")
@@ -304,6 +309,11 @@ def build_and_export_suits():
     create_varia_suit_meshes(arm)
     attach_combat_actions(arm)
     out_path = os.path.join(OUTPUT_DIR, "samus_varia_suit.glb")
+    # Clean up stray meshes
+    for o in list(bpy.data.objects):
+        if "Icosphere" in o.name or o.name.startswith("Cube.") or o.name.startswith("Cylinder."):
+            if o.parent != arm:
+                bpy.data.objects.remove(o, do_unlink=True)
     bpy.ops.export_scene.gltf(filepath=out_path, export_format='GLB', export_yup=True, export_animations=True)
     print(f"Exported: {out_path} ({os.path.getsize(out_path)} bytes)")
 
@@ -414,6 +424,11 @@ def build_and_export_suits():
 
     attach_combat_actions(arm)
     out_path = os.path.join(OUTPUT_DIR, "samus_zero_suit.glb")
+    # Clean up stray meshes
+    for o in list(bpy.data.objects):
+        if "Icosphere" in o.name or o.name.startswith("Cube.") or o.name.startswith("Cylinder."):
+            if o.parent != arm:
+                bpy.data.objects.remove(o, do_unlink=True)
     bpy.ops.export_scene.gltf(filepath=out_path, export_format='GLB', export_yup=True, export_animations=True)
     print(f"Exported: {out_path} ({os.path.getsize(out_path)} bytes)")
 
@@ -440,6 +455,11 @@ def build_and_export_suits():
 
     attach_combat_actions(arm)
     out_path = os.path.join(OUTPUT_DIR, "samus_dread_suit.glb")
+    # Clean up stray meshes
+    for o in list(bpy.data.objects):
+        if "Icosphere" in o.name or o.name.startswith("Cube.") or o.name.startswith("Cylinder."):
+            if o.parent != arm:
+                bpy.data.objects.remove(o, do_unlink=True)
     bpy.ops.export_scene.gltf(filepath=out_path, export_format='GLB', export_yup=True, export_animations=True)
     print(f"Exported: {out_path} ({os.path.getsize(out_path)} bytes)")
 
@@ -460,6 +480,11 @@ def build_and_export_suits():
 
     attach_combat_actions(arm)
     out_path = os.path.join(OUTPUT_DIR, "samus_gravity_suit.glb")
+    # Clean up stray meshes
+    for o in list(bpy.data.objects):
+        if "Icosphere" in o.name or o.name.startswith("Cube.") or o.name.startswith("Cylinder."):
+            if o.parent != arm:
+                bpy.data.objects.remove(o, do_unlink=True)
     bpy.ops.export_scene.gltf(filepath=out_path, export_format='GLB', export_yup=True, export_animations=True)
     print(f"Exported: {out_path} ({os.path.getsize(out_path)} bytes)")
 

@@ -389,14 +389,15 @@ export class CombatInputEngine {
         this.setStance('idle');
       }
 
-      // Desplazamiento vertical respetando piso
-      this.char.externalModel.position.y = this.groundY + this.jumpY;
+      const activeGroundY = this.char.baseGroundY !== undefined ? this.char.baseGroundY : 0.05;
+      this.char.externalModel.position.y = activeGroundY + this.jumpY;
     } else if (this.char.externalModel && !this.isAirborne) {
-      // Grounding IK para asegurar pies pegados al piso a y = 0.20
+      // Grounding IK para asegurar pies pegados al piso
+      const activeGroundY = this.char.baseGroundY !== undefined ? this.char.baseGroundY : 0.05;
       if (this.state === 'crouch') {
-        this.char.externalModel.position.y = this.groundY - 0.12;
+        this.char.externalModel.position.y = activeGroundY - 0.12;
       } else {
-        this.char.externalModel.position.y = this.groundY;
+        this.char.externalModel.position.y = activeGroundY;
       }
     }
   }

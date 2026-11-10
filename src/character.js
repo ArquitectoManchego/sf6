@@ -964,17 +964,27 @@ export class CharacterController {
           }
         });
         
-        // Auto-fit scale and position on turntable
-        const box = new THREE.Box3().setFromObject(this.externalModel);
+        // Auto-fit scale and position on turntable (Mesh-based bounding box)
+        const box = new THREE.Box3();
+        let meshCount = 0;
+        this.externalModel.traverse((child) => {
+          if (child.isMesh && child.geometry) {
+            box.expandByObject(child);
+            meshCount++;
+          }
+        });
+        if (meshCount === 0) box.setFromObject(this.externalModel);
+
         const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const targetHeight = 1.8;
-        const scale = targetHeight / (maxDim || 1);
+        const modelHeight = size.y > 0.1 ? size.y : Math.max(size.x, size.y, size.z);
+        const targetHeight = 1.78;
+        const scale = modelHeight > 0.05 ? targetHeight / modelHeight : 1.0;
         this.externalModel.scale.set(scale, scale, scale);
 
         // Center on turntable floor
         box.setFromObject(this.externalModel);
-        this.externalModel.position.set(0, -box.min.y + 0.20, 0);
+        this.baseGroundY = -box.min.y + 0.02;
+        this.externalModel.position.set(0, this.baseGroundY, 0);
 
         this.characterGroup.add(this.externalModel);
 

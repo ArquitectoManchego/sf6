@@ -86,6 +86,24 @@ class App {
         const tabId = btn.getAttribute('data-tab');
         const panel = document.getElementById(`panel-${tabId}`);
         if (panel) panel.classList.add('active');
+
+        // Auto-load 3D character when switching tabs
+        if (tabId === 'samus') {
+          // Immediately load Samus Varia Suit on turntable if not already on Samus
+          if (this.currentFighterKey !== 'samus') {
+            const activeSuitBtn = document.querySelector('.suit-chip-btn.active') || document.getElementById('btn-samus-varia');
+            if (activeSuitBtn) activeSuitBtn.click();
+          }
+        } else if (tabId === 'chunli') {
+          // Immediately restore Chun-Li on turntable
+          if (this.currentFighterKey !== 'chunli') {
+            const activeChunLiCard = document.querySelector('.chunli-card.active') || document.getElementById('btn-load-chunli-sf6');
+            if (activeChunLiCard) activeChunLiCard.click();
+          }
+        } else if (tabId === 'roster') {
+          // Ensure female roster grid is refreshed and visible
+          this.renderFemaleRosterGrid(this.currentCategory || 'all');
+        }
       });
     });
 

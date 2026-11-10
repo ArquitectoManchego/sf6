@@ -42,6 +42,7 @@ def load_base_rig():
 
 def bind_mesh_to_bone(obj, arm, bone_name):
     obj.parent = arm
+    obj.matrix_parent_inverse = arm.matrix_world.inverted()
     mod = obj.modifiers.new(name="Armature", type='ARMATURE')
     mod.object = arm
     vg = obj.vertex_groups.new(name=bone_name)
@@ -78,6 +79,9 @@ def attach_combat_actions(arm):
             start_frame = int(src_action.frame_range[0])
             track.strips.new(action_name, start_frame, new_action)
         bpy.data.objects.remove(mocap_arm, do_unlink=True)
+        for obj in list(bpy.data.objects):
+            if obj != arm and obj.parent != arm:
+                bpy.data.objects.remove(obj, do_unlink=True)
         
     idle_act = bpy.data.actions.get("Idle_Combat")
     if idle_act:
