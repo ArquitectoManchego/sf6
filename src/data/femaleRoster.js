@@ -152,10 +152,11 @@ export const FEMALE_ROSTER = [
     badgeColor: 'sf6-purple',
     combatArchetype: 'Taekwondo Corrupto & Almacenamiento Fuha',
     desc: 'Luchadora despiadada que disfruta del sufrimiento ajeno. Utiliza el motor cibernético Feng Shui en su ojo izquierdo.',
-    modelUrl: '/models/chunli_sf6_animated.glb',
+    modelUrl: '/models/juri_sf6.glb',
     neonColor: '#7209b7',
     moves: [
-      { id: 'fuhajin', name: 'Fuhajin (Carga Ki)', input: '214K', startup: '14f', active: '8f', recovery: '16f', hit: '+2', block: '-4', damage: 900, anim: 'Drive_Impact' }
+      { id: 'fuhajin', name: 'Fuhajin (Carga Ki)', input: '214K', startup: '14f', active: '8f', recovery: '16f', hit: '+2', block: '-4', damage: 900, anim: 'Drive_Impact' },
+      { id: 'saihasho', name: 'Saihasho (Proyectil Bajo)', input: '236LK', startup: '12f', active: '25f', recovery: '18f', hit: '+3', block: '-2', damage: 1050, anim: 'Lightning_Kick' }
     ]
   },
   {
@@ -168,9 +169,12 @@ export const FEMALE_ROSTER = [
     badgeColor: 'sf6-cyan',
     combatArchetype: 'Grappler de Medallas de Nivel 1 a 5',
     desc: 'Bailarina y judoka francesa que incrementa exponencialmente el daño de sus agarres con cada derribo exitoso.',
-    modelUrl: '/models/chunli_sf6_animated.glb',
+    modelUrl: '/models/manon_sf6.glb',
     neonColor: '#48cae4',
-    moves: []
+    moves: [
+      { id: 'manege_dore', name: 'Manège Doré (Proyección Judo)', input: '63214P', startup: '8f', active: '3f', recovery: '35f', hit: 'Hard KD', block: 'Throw', damage: 2200, anim: 'Drive_Impact' },
+      { id: 'rond_point', name: 'Rond-Point (Salto Ballet)', input: '236K', startup: '11f', active: '16f', recovery: '22f', hit: 'Launch', block: '-8', damage: 1400, anim: 'Tenshokyaku' }
+    ]
   },
   {
     id: 'kimberly_sf6',
@@ -182,9 +186,46 @@ export const FEMALE_ROSTER = [
     badgeColor: 'sf6-gold',
     combatArchetype: 'Ninjutsu Urbano, Shuriken Spray y Carrera Ninja',
     desc: 'Discípula de Guy, combina ninjutsu tradicional con botes de spray y el ritmo ochentero de su walkman.',
-    modelUrl: '/models/chunli_sf6_animated.glb',
+    modelUrl: '/models/kimberly_sf6.glb',
     neonColor: '#ffb703',
-    moves: []
+    moves: [
+      { id: 'senpu_kyaku', name: 'Senpu Kyaku (Torbellino Ninja)', input: '214K', startup: '9f', active: '18f', recovery: '24f', hit: 'KD', block: '-10', damage: 1300, anim: 'Spinning_Bird_Kick' },
+      { id: 'sprint_kick', name: 'Carrera Bushin & Patada Voladora', input: '236K', startup: '10f', active: '14f', recovery: '20f', hit: '+2', block: '-4', damage: 1100, anim: 'Tenshokyaku' }
+    ]
+  },
+  {
+    id: 'marisa_sf6',
+    name: 'Marisa',
+    title: 'Gladiadora Colosal del Pancracio',
+    universe: 'sf6',
+    universeName: 'Street Fighter 6',
+    badge: '🏛️ PANCRACIO SF6',
+    badgeColor: 'sf6-pink',
+    combatArchetype: 'Fuerza Bruta Acorazada, Scutum y Gladius',
+    desc: 'Escultora y luchadora de pancracio italiana descendiente de guerreros griegos. Posee blindaje pesado en sus ataques cargados.',
+    modelUrl: '/models/marisa_sf6.glb',
+    neonColor: '#e63946',
+    moves: [
+      { id: 'gladius', name: 'Gladius (Puño Acorazado)', input: '236P', startup: '15f', active: '4f', recovery: '22f', hit: '+4', block: '-2', damage: 1700, anim: 'Drive_Impact' },
+      { id: 'phalanx', name: 'Phalanx (Salto Demoledor)', input: '623P', startup: '18f', active: '12f', recovery: '26f', hit: 'Wall Bounce', block: '+3', damage: 1900, anim: 'Tenshokyaku' }
+    ]
+  },
+  {
+    id: 'aki_sf6',
+    name: 'A.K.I.',
+    title: 'Asesina del Veneno de las Sombras',
+    universe: 'sf6',
+    universeName: 'Street Fighter 6',
+    badge: '🐍 VENENO SHADOW',
+    badgeColor: 'sf6-cyan',
+    combatArchetype: 'Garras Venenosas, Deslizamiento y Toxic Shock',
+    desc: 'Discípula de F.A.N.G., envenena a sus rivales con garras afiladas y movimientos sinuosos de serpiente.',
+    modelUrl: '/models/aki_sf6.glb',
+    neonColor: '#00f5d4',
+    moves: [
+      { id: 'serpent_slash', name: 'Serpent Slash (Látigo de Garras)', input: '236P', startup: '13f', active: '6f', recovery: '21f', hit: 'Poison', block: '-4', damage: 1250, anim: 'Lightning_Kick' },
+      { id: 'snake_step', name: 'Paso de Serpiente & Zancada', input: '214P', startup: '10f', active: '15f', recovery: '18f', hit: 'KD', block: '+1', damage: 1100, anim: 'Drive_Impact' }
+    ]
   },
 
   // ==========================================

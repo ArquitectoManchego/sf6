@@ -7,6 +7,7 @@ import { DriveImpactFX } from './shaders.js';
 import { sfx } from './audio.js';
 import { SF6_MOVE_DATA } from './data/sf6Moves.js';
 import { FEMALE_ROSTER, FemaleRosterQueueManager } from './data/femaleRoster.js';
+import { CombatInputEngine } from './combatEngine.js';
 
 class App {
   constructor() {
@@ -67,6 +68,7 @@ class App {
     this.driveImpactFX = new DriveImpactFX(this.scene);
     this.character = new CharacterController(this.scene, this.stage.turntableGroup);
     this.animator = new AnimationController(this.character, this.driveImpactFX);
+    this.combatEngine = new CombatInputEngine(this, this.character, this.driveImpactFX);
   }
 
   initUI() {
@@ -1158,6 +1160,7 @@ class App {
     this.stage.update(delta);
     this.character.update(delta);
     this.animator.update(delta);
+    if (this.combatEngine) this.combatEngine.update(delta);
     this.driveImpactFX.update(delta);
 
     if (this.isTransitioningCam) {

@@ -1959,5 +1959,261 @@ input:checked + .switch-slider:before {
   flex: 1;
 }
 
+/* =========================================================
+   VIRTUAL ARCADE FIGHTSTICK & KEYBOARD CONTROLS HUD
+   ========================================================= */
+.arcade-fightstick-hud {
+  position: absolute;
+  bottom: 84px;
+  left: 28px;
+  z-index: 25;
+  background: rgba(11, 15, 23, 0.88);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  backdrop-filter: blur(14px);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  max-width: 500px;
+  pointer-events: auto;
+}
+
+.fightstick-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fightstick-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
+}
+
+.fs-title {
+  font-family: var(--font-hud);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.fs-status {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--neon-cyan);
+  background: rgba(0, 245, 212, 0.12);
+  padding: 1px 6px;
+  border-radius: 3px;
+  letter-spacing: 1px;
+}
+
+.fightstick-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* D-Pad Virtual */
+.fs-dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.dpad-middle-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.dpad-btn {
+  width: 28px;
+  height: 28px;
+  background: #1c2333;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.1s;
+  user-select: none;
+}
+
+.dpad-center {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: #475569;
+}
+
+.dpad-btn.active, .dpad-btn:active {
+  background: var(--neon-cyan);
+  color: #080a0f;
+  box-shadow: 0 0 10px var(--neon-cyan);
+  transform: scale(0.92);
+}
+
+/* Arcade Action Buttons */
+.fs-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fs-btn-row {
+  display: flex;
+  gap: 6px;
+}
+
+.fs-arcade-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.1s;
+  background: #1a202c;
+  color: #fff;
+  line-height: 1;
+}
+
+.fs-key {
+  font-size: 10px;
+  font-family: var(--font-hud);
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+.fs-lbl {
+  font-size: 9px;
+  font-family: var(--font-display);
+  letter-spacing: 0.5px;
+  color: #e2e8f0;
+}
+
+.fs-arcade-btn.btn-lp { border-color: #38bdf8; }
+.fs-arcade-btn.btn-mp { border-color: #fbbf24; }
+.fs-arcade-btn.btn-hp { border-color: #f43f5e; }
+.fs-arcade-btn.btn-lk { border-color: #34d399; }
+.fs-arcade-btn.btn-mk { border-color: #a78bfa; }
+.fs-arcade-btn.btn-hk { border-color: #fb7185; }
+
+.fs-arcade-btn.active, .fs-arcade-btn:active {
+  transform: scale(0.90);
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0 14px #fff;
+}
+
+/* Specials Column */
+.fs-specials-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fs-special-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-family: var(--font-hud);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.fs-special-btn.btn-drive {
+  border-color: var(--neon-pink);
+  background: rgba(255, 0, 110, 0.18);
+  color: #fff;
+}
+
+.fs-special-btn.btn-drive.active, .fs-special-btn.btn-drive:active {
+  background: linear-gradient(135deg, var(--neon-pink), #ff5400);
+  box-shadow: 0 0 15px rgba(255, 0, 110, 0.8);
+  transform: scale(0.95);
+}
+
+.fs-special-btn.btn-super {
+  border-color: #a855f7;
+  background: rgba(168, 85, 247, 0.18);
+  color: #fff;
+}
+
+.fs-special-btn.btn-super.active, .fs-special-btn.btn-super:active {
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.8);
+  transform: scale(0.95);
+}
+
+/* Input Feed Log */
+.fs-input-feed-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.fs-feed-label {
+  font-size: 9px;
+  font-family: var(--font-hud);
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.fs-input-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 22px;
+}
+
+.fs-feed-item {
+  font-size: 11px;
+  font-family: var(--font-hud);
+  font-weight: 700;
+  color: var(--neon-cyan);
+  letter-spacing: 0.5px;
+  animation: fadeInFeed 0.2s ease-out;
+}
+
+.fs-feed-item.highlight {
+  color: #fbbf24;
+}
+
+@keyframes fadeInFeed {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 900px) {
+  .arcade-fightstick-hud {
+    display: none;
+  }
+}
+
+
 
 
