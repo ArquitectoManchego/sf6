@@ -419,270 +419,44 @@ export class AnatomicalDeformerAI {
    * Aplica los modificadores anatómicos con el motor Dual-Layer (Huesos + Vértices RBF + Shaders)
    */
   apply() {
-    const p = this.char.params;
-    if (!p) return;
-
-    if (!this.char.isUsingExternalModel || !this.model) {
-      return;
-    }
-
-    const sens = this.sensitivity;
-
-    // ==========================================
-    // 1. ESTATURA & CONTACTO AL PISO (Grounding)
-    // ==========================================
-    const h = p.height || 1.0;
-    const heightFactor = Math.max(0.7, Math.min(1.4, h));
-    
-    const lateralComp = 1.0 + (heightFactor - 1.0) * 0.15;
-    this.model.scale.set(
-      this.baseModelScale.x * lateralComp,
-      this.baseModelScale.y * heightFactor,
-      this.baseModelScale.z * lateralComp
-    );
-
-    const bbox = new THREE.Box3().setFromObject(this.model);
-    this.model.position.y = -bbox.min.y + this.groundY;
-
-    // ==========================================
-    // 2. CAPA ESQUELÉTICA (Driver Bones Scaling)
-    // ==========================================
-    const bustScale = (p.bustSize !== undefined ? p.bustSize : 1.0) * sens.bust;
-    const cupProjection = (p.bustCup !== undefined ? p.bustCup : 1.0);
-    const dedicatedBustBones = this.channels.bust.filter(b => /bust|breast|boob|pec_/i.test(b.name));
-    
-    if (dedicatedBustBones.length > 0) {
-      dedicatedBustBones.forEach(bone => {
-        const rest = bone.userData.aiRestScale || bone.scale;
-        bone.scale.x = rest.x * bustScale;
-        bone.scale.y = rest.y * bustScale;
-        bone.scale.z = rest.z * (bustScale * cupProjection);
-      });
-    }
-
-    const waistWidth = (p.waistWidth !== undefined ? p.waistWidth : 1.0) * sens.waist;
-    const bodyFat = (p.bodyFat !== undefined ? p.bodyFat : 0.15) * sens.fat;
-    const fatFactor = 1.0 + bodyFat * 0.50;
-
-    this.channels.waist.forEach(bone => {
-      const rest = bone.userData.aiRestScale || bone.scale;
-      bone.scale.x = rest.x * (waistWidth * fatFactor);
-      bone.scale.z = rest.z * (waistWidth * 0.95 * fatFactor);
-    });
-
-    const hipWidth = (p.hipWidth !== undefined ? p.hipWidth : 1.0) * sens.hips;
-    const hipFatSpread = 1.0 + bodyFat * 0.20;
-
-    this.channels.hips.forEach(bone => {
-      const rest = bone.userData.aiRestScale || bone.scale;
-      bone.scale.x = rest.x * (hipWidth * hipFatSpread);
-    });
-
-    const gluteSize = (p.gluteSize !== undefined ? p.gluteSize : 1.1) * sens.glutes;
-    const shape = p.gluteShape || 'heart';
-    let gluteX = gluteSize;
-    let gluteY = gluteSize;
-    let gluteZ = gluteSize * 1.18;
-
-    if (shape === 'heart') {
-      gluteX *= 1.24; gluteY *= 1.06; gluteZ *= 1.22;
-    } else if (shape === 'teardrop') {
-      gluteX *= 1.04; gluteY *= 1.18; gluteZ *= 1.30;
-    } else if (shape === 'oval') {
-      gluteX *= 0.92; gluteY *= 1.25; gluteZ *= 1.10;
-    } else if (shape === 'round') {
-      gluteX *= 1.14; gluteY *= 1.14; gluteZ *= 1.24;
-    }
-
-    if (this.channels.glutes.length > 0) {
-      this.channels.glutes.forEach(bone => {
-        const rest = bone.userData.aiRestScale || bone.scale;
-        bone.scale.x = rest.x * gluteX;
-        bone.scale.y = rest.y * gluteY;
-        bone.scale.z = rest.z * gluteZ;
-      });
-    }
-
-    const thighWidth = (p.thighWidth !== undefined ? p.thighWidth : 1.15) * sens.thighs;
-    const thighFatSpread = 1.0 + bodyFat * 0.22;
-    const finalThighThickness = thighWidth * thighFatSpread;
-
-    this.channels.thighs.forEach(bone => {
-      const rest = bone.userData.aiRestScale || bone.scale;
-      bone.scale.x = rest.x * finalThighThickness;
-      bone.scale.z = rest.z * (finalThighThickness * 1.06);
-    });
-
-    const calfWidth = (p.calfWidth !== undefined ? p.calfWidth : 1.05) * sens.calves;
-    this.channels.calves.forEach(bone => {
-      const rest = bone.userData.aiRestScale || bone.scale;
-      bone.scale.x = rest.x * calfWidth;
-      bone.scale.z = rest.z * (calfWidth * 1.08);
-    });
-
-    // ==========================================
-    // 3. CAPA GEOMÉTRICA (Direct RBF Vertex Morphing)
-    // ==========================================
-    if (this.needsVertexUpdate) {
-      this.applyVertexRBFDeformation(bustScale, cupProjection, waistWidth, fatFactor, hipWidth, gluteSize, shape, finalThighThickness, calfWidth);
-      this.needsVertexUpdate = false;
-    }
-
-    // ==========================================
-    // 4. SHADERS: MUSCULATURA & GRASA CORPORAL
-    // ==========================================
-    const muscularity = (p.muscularity !== undefined ? p.muscularity : 0.7) * sens.muscle;
-    const effectiveNormalScale = Math.max(0.2, (0.4 + muscularity * 1.9) * (1.25 - bodyFat * 1.1));
-
-    this.materials.forEach(mat => {
-      if (mat.normalScale) {
-        mat.normalScale.set(effectiveNormalScale, effectiveNormalScale);
-      } else if (!mat.normalMap && this.char.muscleNormalMap) {
-        mat.normalMap = this.char.muscleNormalMap;
-        mat.normalScale = new THREE.Vector2(effectiveNormalScale, effectiveNormalScale);
-        mat.needsUpdate = true;
+    // DESACTIVACIÓN TOTAL DE DEFORMACIONES SOLICITADA POR EL USUARIO:
+    // Preservar la malla 3D, silueta y anatomía de los modelos al 100% sin deformación.
+    if (this.skinnedMeshes && this.skinnedMeshes.length > 0) {
+      for (let m = 0; m < this.skinnedMeshes.length; m++) {
+        const mesh = this.skinnedMeshes[m];
+        if (mesh.geometry && mesh.geometry.attributes.position && mesh.geometry.userData.origPositions) {
+          mesh.geometry.attributes.position.array.set(mesh.geometry.userData.origPositions);
+          mesh.geometry.attributes.position.needsUpdate = true;
+        }
       }
-
-      if (mat.userData && mat.userData.aiInitial) {
-        const baseRough = mat.userData.aiInitial.roughness;
-        mat.roughness = THREE.MathUtils.clamp(
-          baseRough * (1.0 - muscularity * 0.22) + (bodyFat * 0.25),
-          0.15,
-          0.90
-        );
-      }
-    });
-
-    if (this.isEditorModeActive) {
-      this.updateGizmoTransforms();
     }
+    // Restaurar escala original exacta de los huesos
+    Object.values(this.channels).forEach(boneList => {
+      boneList.forEach(bone => {
+        if (bone && bone.userData && bone.userData.aiRestScale) {
+          bone.scale.copy(bone.userData.aiRestScale);
+        }
+      });
+    });
+    return;
   }
 
   /**
-   * Deformación RBF directa sobre los vértices de las mallas (Body + Cloth)
+   * Deformación RBF desactivada para preservar la topología original
    */
-  applyVertexRBFDeformation(bustScale, cupProj, waistWidth, fatFactor, hipWidth, gluteScale, gluteShape, thighScale, calfScale) {
-    if (this.skinnedMeshes.length === 0) return;
-
-    const z = this.zones;
-    const deltaBust = (bustScale * cupProj - 1.0) * 0.08;
-    const deltaWaist = (waistWidth * fatFactor - 1.0) * 0.06;
-    const deltaHip = (hipWidth - 1.0) * 0.06;
-    const deltaGlute = (gluteScale - 1.0) * 0.10;
-    const deltaThigh = (thighScale - 1.0) * 0.06;
-    const deltaCalf = (calfScale - 1.0) * 0.04;
-
-    // Solo ejecutar si hay deformación significativa respecto a 1.0
-    const hasDeform = Math.abs(deltaBust) > 0.001 || Math.abs(deltaWaist) > 0.001 || 
-                      Math.abs(deltaHip) > 0.001 || Math.abs(deltaGlute) > 0.001 || 
-                      Math.abs(deltaThigh) > 0.001 || Math.abs(deltaCalf) > 0.001;
-
-    for (let m = 0; m < this.skinnedMeshes.length; m++) {
-      const mesh = this.skinnedMeshes[m];
-      if (!mesh.geometry || !mesh.geometry.attributes.position || !mesh.geometry.userData.origPositions) continue;
-
-      const pos = mesh.geometry.attributes.position.array;
-      const orig = mesh.geometry.userData.origPositions;
-      const count = mesh.geometry.attributes.position.count;
-
-      if (!hasDeform) {
-        // Restaurar posición original exacta
-        pos.set(orig);
-        mesh.geometry.attributes.position.needsUpdate = true;
-        continue;
+  applyVertexRBFDeformation() {
+    if (this.skinnedMeshes && this.skinnedMeshes.length > 0) {
+      for (let m = 0; m < this.skinnedMeshes.length; m++) {
+        const mesh = this.skinnedMeshes[m];
+        if (mesh.geometry && mesh.geometry.attributes.position && mesh.geometry.userData.origPositions) {
+          mesh.geometry.attributes.position.array.set(mesh.geometry.userData.origPositions);
+          mesh.geometry.attributes.position.needsUpdate = true;
+        }
       }
-
-      for (let i = 0; i < count; i++) {
-        const i3 = i * 3;
-        const ox = orig[i3];
-        const oy = orig[i3 + 1];
-        const oz = orig[i3 + 2];
-
-        let dx = 0;
-        let dy = 0;
-        let dz = 0;
-
-        // 1. Busto RBF (Vértices frontales z > 0 en altura de pecho)
-        if (oz > 0.02 && oy > z.bustL.center.y - 0.18 && oy < z.bustL.center.y + 0.18) {
-          const distL2 = (ox - z.bustL.center.x)**2 + (oy - z.bustL.center.y)**2 + (oz - z.bustL.center.z)**2;
-          const distR2 = (ox - z.bustR.center.x)**2 + (oy - z.bustR.center.y)**2 + (oz - z.bustR.center.z)**2;
-          const r2 = z.bustL.radius**2;
-
-          if (distL2 < r2) {
-            const w = (1.0 - distL2 / r2)**2;
-            dz += deltaBust * w * 1.3;
-            dx += deltaBust * w * 0.35;
-          }
-          if (distR2 < r2) {
-            const w = (1.0 - distR2 / r2)**2;
-            dz += deltaBust * w * 1.3;
-            dx -= deltaBust * w * 0.35;
-          }
-        }
-
-        // 2. Cintura RBF
-        if (oy > z.waist.center.y - 0.14 && oy < z.waist.center.y + 0.14) {
-          const dY = Math.abs(oy - z.waist.center.y) / 0.14;
-          const w = (1.0 - dY * dY)**2;
-          dx += ox * deltaWaist * w;
-          dz += oz * deltaWaist * w * 0.85;
-        }
-
-        // 3. Cadera RBF
-        if (oy > z.hips.center.y - 0.12 && oy < z.hips.center.y + 0.12) {
-          const dY = Math.abs(oy - z.hips.center.y) / 0.12;
-          const w = (1.0 - dY * dY)**2;
-          dx += (ox > 0 ? 1 : -1) * deltaHip * w * 0.65;
-        }
-
-        // 4. Glúteos RBF (Vértices posteriores z < 0 en altura de glúteos)
-        if (oz < -0.01 && oy > z.gluteL.center.y - 0.16 && oy < z.gluteL.center.y + 0.16) {
-          const distL2 = (ox - z.gluteL.center.x)**2 + (oy - z.gluteL.center.y)**2 + (oz - z.gluteL.center.z)**2;
-          const distR2 = (ox - z.gluteR.center.x)**2 + (oy - z.gluteR.center.y)**2 + (oz - z.gluteR.center.z)**2;
-          const r2 = z.gluteL.radius**2;
-
-          let shapeZMult = 1.0;
-          let shapeXMult = 1.0;
-          if (gluteShape === 'heart') { shapeZMult = 1.15; shapeXMult = 1.25; }
-          else if (gluteShape === 'teardrop') { shapeZMult = 1.28; shapeXMult = 1.05; }
-          else if (gluteShape === 'round') { shapeZMult = 1.20; shapeXMult = 1.15; }
-
-          if (distL2 < r2) {
-            const w = (1.0 - distL2 / r2)**2;
-            dz -= deltaGlute * w * 1.4 * shapeZMult;
-            dx += deltaGlute * w * 0.45 * shapeXMult;
-          }
-          if (distR2 < r2) {
-            const w = (1.0 - distR2 / r2)**2;
-            dz -= deltaGlute * w * 1.4 * shapeZMult;
-            dx -= deltaGlute * w * 0.45 * shapeXMult;
-          }
-        }
-
-        // 5. Muslos RBF
-        if (oy > z.thighL.center.y - 0.20 && oy < z.thighL.center.y + 0.20) {
-          const dY = Math.abs(oy - z.thighL.center.y) / 0.20;
-          const w = (1.0 - dY * dY)**2;
-          dx += (ox > 0 ? 1 : -1) * deltaThigh * w * 0.55;
-          dz += (oz > 0 ? 1 : -1) * deltaThigh * w * 0.50;
-        }
-
-        // 6. Gemelos RBF
-        if (oy > z.calfL.center.y - 0.16 && oy < z.calfL.center.y + 0.16) {
-          const dY = Math.abs(oy - z.calfL.center.y) / 0.16;
-          const w = (1.0 - dY * dY)**2;
-          dx += (ox > 0 ? 1 : -1) * deltaCalf * w * 0.45;
-          dz += (oz > 0 ? 1 : -1) * deltaCalf * w * 0.50;
-        }
-
-        pos[i3] = ox + dx;
-        pos[i3 + 1] = oy + dy;
-        pos[i3 + 2] = oz + dz;
-      }
-
-      mesh.geometry.attributes.position.needsUpdate = true;
     }
+    return;
   }
+
 
   /**
    * Ajusta la sensibilidad de un canal específico para calibración fina

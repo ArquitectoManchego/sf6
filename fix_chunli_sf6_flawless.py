@@ -212,17 +212,15 @@ for fbx_file, action_name, start_f, end_f, lock_center in mocap_actions:
             c.target = src_arm
             c.subtarget = s_bone
             
-    # 3. Legs via IK (Chain 2: Thigh + Knee to Foot)
+    # 3. Legs via IK on Foot (Chain 2: Thigh + Knee to Foot)
     for s_side, t_side in [('Left', 'L'), ('Right', 'R')]:
-        pb_knee = tgt_arm.pose.bones.get(f'{t_side}_Knee')
-        if pb_knee:
-            c_ik = pb_knee.constraints.new('IK')
+        pb_foot = tgt_arm.pose.bones.get(f'{t_side}_Foot')
+        if pb_foot:
+            c_ik = pb_foot.constraints.new('IK')
             c_ik.target = src_arm
             c_ik.subtarget = f'mixamorig:{s_side}Foot'
             c_ik.chain_count = 2
             
-        pb_foot = tgt_arm.pose.bones.get(f'{t_side}_Foot')
-        if pb_foot:
             c_rot_foot = pb_foot.constraints.new('COPY_ROTATION')
             c_rot_foot.target = src_arm
             c_rot_foot.subtarget = f'mixamorig:{s_side}Foot'

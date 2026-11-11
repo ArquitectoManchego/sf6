@@ -8,6 +8,7 @@ if addon_dir not in sys.path:
 
 import bpy
 import addon_utils
+import math
 from mathutils import Vector, Matrix, Euler
 
 addon_utils.enable("re_mesh_editor")
@@ -238,7 +239,7 @@ for f in fighters:
             bsdf.inputs['Metallic'].default_value = 0.1
             bsdf.inputs['Roughness'].default_value = 0.5
             
-    # 5. Bake Combat Mocap
+    # 5. Bake Combat Mocap with Anatomical Visual Keying & IK Constraints
     for pb in arm.pose.bones:
         pb.rotation_mode = 'QUATERNION'
         
@@ -248,41 +249,109 @@ for f in fighters:
             continue
         bpy.ops.import_scene.fbx(filepath=fbx_path)
         src_arm = [o for o in bpy.data.objects if o.type == 'ARMATURE' and o != arm][0]
-        src_act = src_arm.animation_data.action
+        src_act = src_arm.animation_data.action if src_arm.animation_data else None
         
-        new_act = bpy.data.actions.new(name=act_name)
-        if not arm.animation_data:
-            arm.animation_data_create()
-        arm.animation_data.action = new_act
+        # Clear any previous constraints
+        for pb in arm.pose.bones:
+            for c in list(pb.constraints):
+                pb.constraints.remove(c)
+                
+        # 1. Hips (Root)
+        pb_hip = arm.pose.bones.get('C_Hip')
+        if pb_hip:
+            c_loc = pb_hip.constraints.new('COPY_LOCATION')
+            c_loc.target = src_arm
+            c_loc.subtarget = 'mixamorig:Hips'
+            c_rot = pb_hip.constraints.new('COPY_ROTATION')
+            c_rot.target = src_arm
+            c_rot.subtarget = 'mixamorig:Hips'
+            
+        # 2. Spine & Head Hierarchy
+        spine_pairs = [
+            ('mixamorig:Spine', 'C_Spine1'),
+            ('mixamorig:Spine1', 'C_Spine2'),
+            ('mixamorig:Spine2', 'C_Chest'),
+            ('mixamorig:Neck', 'C_Neck'),
+            ('mixamorig:Head', 'C_Head')
+        ]
+        for s_bone, t_bone in spine_pairs:
+            pb = arm.pose.bones.get(t_bone)
+            if pb:
+                c = pb.constraints.new('COPY_ROTATION')
+                c.target = src_arm
+                c.subtarget = s_bone
+                
+        # 3. Legs via IK on Foot (Chain 2: Thigh + Knee to Foot)
+        for s_side, t_side in [('Left', 'L'), ('Right', 'R')]:
+            pb_foot = arm.pose.bones.get(f'{t_side}_Foot')
+            if pb_foot:
+                c_ik = pb_foot.constraints.new('IK')
+                c_ik.target = src_arm
+                c_ik.subtarget = f'mixamorig:{s_side}Foot'
+                c_ik.chain_count = 2
+                
+                c_rot_foot = pb_foot.constraints.new('COPY_ROTATION')
+                c_rot_foot.target = src_arm
+                c_rot_foot.subtarget = f'mixamorig:{s_side}Foot'
+                
+            pb_toe = arm.pose.bones.get(f'{t_side}_Toe')
+            if pb_toe:
+                c_rot_toe = pb_toe.constraints.new('COPY_ROTATION')
+                c_rot_toe.target = src_arm
+                c_rot_toe.subtarget = f'mixamorig:{s_side}ToeBase'
+
+        # 4. Arms via Anatomical IK
+        for s_side, t_side, pole_deg in [('Left', 'L', 0), ('Right', 'R', 90)]:
+            pb_forearm = arm.pose.bones.get(f'{t_side}_ForeArm')
+            if pb_forearm:
+                c_ik_arm = pb_forearm.constraints.new('IK')
+                c_ik_arm.target = src_arm
+                c_ik_arm.subtarget = f'mixamorig:{s_side}Hand'
+                c_ik_arm.chain_count = 2
+                c_ik_arm.pole_target = src_arm
+                c_ik_arm.pole_subtarget = f'mixamorig:{s_side}ForeArm'
+                c_ik_arm.pole_angle = math.radians(pole_deg)
+                
+            pb_hand = arm.pose.bones.get(f'{t_side}_Hand')
+            if pb_hand:
+                c_rot_hand = pb_hand.constraints.new('COPY_ROTATION')
+                c_rot_hand.target = src_arm
+                c_rot_hand.subtarget = f'mixamorig:{s_side}Hand'
+
+        # Bake action with visual keying
+        bpy.context.view_layer.objects.active = arm
+        bpy.ops.object.mode_set(mode='POSE')
+        bpy.ops.pose.select_all(action='SELECT')
+        bpy.ops.nla.bake(
+            frame_start=start_f,
+            frame_end=end_f,
+            only_selected=False,
+            visual_keying=True,
+            clear_constraints=True,
+            bake_types={'POSE'}
+        )
         
-        for frame_idx in range(start_f, end_f + 1):
-            rel_f = frame_idx - start_f + 1
-            bpy.context.scene.frame_set(frame_idx)
-            for mix_name, cap_name in re_bone_map.items():
-                pb = arm.pose.bones.get(cap_name)
-                src_pb = src_arm.pose.bones.get(mix_name)
-                if pb and src_pb:
-                    pb.rotation_quaternion = src_pb.rotation_quaternion.copy()
-                    pb.keyframe_insert(data_path="rotation_quaternion", frame=rel_f)
-                    if cap_name == 'C_Hip':
-                        pb.location = src_pb.location.copy()
-                        pb.keyframe_insert(data_path="location", frame=rel_f)
-                        
-        if lock_center:
-            fc_list = get_action_fcurves(new_act)
-            for fc in fc_list:
-                if 'C_Hip' in fc.data_path and fc.array_index in (0, 1):
-                    for kp in fc.keyframe_points:
-                        kp.co[1] = 0.0
-                        
-        new_act.use_fake_user = True
+        if arm.animation_data and arm.animation_data.action:
+            arm.animation_data.action.name = act_name
+            track = arm.animation_data.nla_tracks.new()
+            track.name = act_name
+            track.strips.new(act_name, start_f, arm.animation_data.action)
+            arm.animation_data.action = None
+            
         bpy.data.objects.remove(src_arm, do_unlink=True)
         if src_act:
             bpy.data.actions.remove(src_act)
             
+    # Purge any non-mocap actions so glTF exporter only exports target actions
+    baked_names = {name for _, name, _, _, _ in mocap_actions}
+    for act in list(bpy.data.actions):
+        if act.name not in baked_names:
+            bpy.data.actions.remove(act)
+
     idle_act = bpy.data.actions.get("Idle_Combat")
     if idle_act:
         arm.animation_data.action = idle_act
+
         
     # 6. Export GLB
     bpy.ops.export_scene.gltf(

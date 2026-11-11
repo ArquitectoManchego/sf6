@@ -756,8 +756,7 @@ export class CharacterController {
 
   // Real-Time Parametric Morphing Engine
   applyCustomization() {
-    if (this.isUsingExternalModel && this.deformer) {
-      this.deformer.apply();
+    if (this.isUsingExternalModel) {
       return;
     }
     const p = this.params;
@@ -902,7 +901,7 @@ export class CharacterController {
     loader.register((parser) => new VRMLoaderPlugin(parser));
 
     // Cache-buster to bypass any browser HTTP cache and immediately load the fresh 3D mesh
-    const finalUrl = (fileUrl.startsWith('blob:') || fileUrl.includes('?')) ? fileUrl : `${fileUrl}?v=sf6_mesh_v2`;
+    const finalUrl = (fileUrl.startsWith('blob:') || fileUrl.includes('?')) ? fileUrl : `${fileUrl}?v=sf6_pristine_v3`;
 
     loader.load(
       finalUrl,
@@ -994,9 +993,15 @@ export class CharacterController {
         const scale = modelHeight > 0.05 ? targetHeight / modelHeight : 1.0;
         this.externalModel.scale.set(scale, scale, scale);
 
-        // Center on turntable floor
-        box.setFromObject(this.externalModel);
-        this.baseGroundY = -box.min.y + 0.02;
+        // Center on turntable floor strictly using mesh bounds
+        const groundBox = new THREE.Box3();
+        this.externalModel.traverse((child) => {
+          if (child.isMesh && child.geometry) {
+            groundBox.expandByObject(child);
+          }
+        });
+        if (groundBox.isEmpty()) groundBox.setFromObject(this.externalModel);
+        this.baseGroundY = -groundBox.min.y + 0.02;
         this.externalModel.position.set(0, this.baseGroundY, 0);
 
         this.characterGroup.add(this.externalModel);
@@ -1110,10 +1115,6 @@ export class CharacterController {
     // 2. Update skeletal animations
     if (this.externalMixer) {
       this.externalMixer.update(delta);
-    }
-    // 3. Real-Time Adaptive AI Anatomical Deformations post-mixer
-    if (this.deformer && this.isUsingExternalModel) {
-      this.deformer.apply();
     }
   }
 }

@@ -137,7 +137,7 @@ for slot, glb_name, suit_name in suits:
         mesh_data = bpy.data.meshes.new(name=obj.name)
         raw_positions = [p[:3] for p in obj.positions[0].data]
         transformed_positions = [
-            (p[0] * SCALE_FACTOR, -p[2] * SCALE_FACTOR, (p[1] + 1.5) * SCALE_FACTOR)
+            (p[0] * SCALE_FACTOR, -p[2] * SCALE_FACTOR, (p[1] + 3.0) * SCALE_FACTOR)
             for p in raw_positions
         ]
         
@@ -192,6 +192,7 @@ for slot, glb_name, suit_name in suits:
                 vg.add(list(range(len(mesh_obj.data.vertices))), 1.0, 'REPLACE')
                 
         mesh_obj.parent = arm
+        mesh_obj.matrix_parent_inverse = arm.matrix_world.inverted()
         mod = mesh_obj.modifiers.new(name="Armature", type='ARMATURE')
         mod.object = arm
         
